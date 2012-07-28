@@ -48,6 +48,7 @@ TEST(ProblemTwo)
     CHECK_EQUAL( 4613732, sum );
     //std::cout << sum << std::endl;
 }
+
 vector<unsigned long> prime_factors( unsigned long N ) {
     unsigned long d = 2;
     vector<unsigned long> ret(0);
@@ -61,6 +62,11 @@ vector<unsigned long> prime_factors( unsigned long N ) {
     return ret;
 
 }
+/*
+The prime factors of 13195 are 5, 7, 13 and 29.
+
+What is the largest prime factor of the number 600851475143 ?
+*/
 
 TEST(ProblemThree)
 {
