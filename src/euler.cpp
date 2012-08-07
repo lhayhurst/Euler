@@ -1,8 +1,10 @@
 #include <UnitTest++.h>
+#include <TestReporterStdout.h>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <cstring>
 using namespace std;
 
 /* If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.
@@ -11,7 +13,7 @@ using namespace std;
    Find the sum of all the multiples of 3 or 5 below 1000.
 */
 TEST(ProblemOne)
-  {
+ {
 
     auto sum = 0;
     for( auto i = 0; i < 999; i++ ) {
@@ -87,7 +89,107 @@ TEST(ProblemThree)
     CHECK_EQUAL( 6857, factors.back() );
 }
 
-int main()
+/* A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit
+   numbers is 9009 = 91 99.
+
+   Find the largest palindrome made from the product of two 3-digit numbers.
+*/
+
+TEST(ProblemFour)
+{
+   unsigned int answer = 0;
+   for ( unsigned int i = 999; i >= 100; i-- ) {
+       for ( unsigned int j = 999; j >= 100; j-- ) {
+           unsigned int num = i * j;
+           unsigned int reversed = 0;
+           unsigned int n = num;
+           while ( n > 0 ) {
+              unsigned int lastdigit = n % 10;
+              reversed = reversed * 10 + lastdigit;
+              n /= 10;
+           }
+           if ( num == reversed ) {
+               if ( num > answer ) {
+                   answer = num;
+               }
+
+           }
+       }
+   }
+   CHECK_EQUAL( 906609, answer );
+
+}
+
+/* 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
+
+What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+*/
+
+//this function canbe more modern c++-y - remove the for loop et least.
+unsigned int factoral( int factor ) {
+    unsigned int product = 1;
+    for( int i = 2; i <= factor; i++ ) {
+        product *= i;
+    }
+    return product;
+}
+
+TEST(ProblemFiveBruteForce)
+{
+    unsigned int start   = 20;
+    unsigned int ceiling = factoral( start );
+    unsigned int m  = ceiling - start;
+    unsigned int result = m;
+    while ( m > 1 ) {
+        unsigned int n = start;
+        bool isdiv = true;
+        while ( n-- > 1 && isdiv ) {
+            if ( m % n != 0 ) {
+                isdiv = false;
+            }
+        }
+        if ( isdiv ) {
+            result = m;
+        }
+        m -= start;
+    }
+    CHECK_EQUAL( 232792560, result );
+
+}
+
+
+int main( int argc, char** argv )
+{
+  if( argc > 1 )
+  {
+      //if first arg is "suite", we search for suite names instead of test names
+    const bool bSuite = strcmp( "suite", argv[ 1 ] ) == 0;
+
+      //walk list of all tests, add those with a name that
+      //matches one of the arguments  to a new TestList
+    const UnitTest::TestList& allTests( UnitTest::Test::GetTestList() );
+    UnitTest::TestList selectedTests;
+    UnitTest::Test* p = allTests.GetHead();
+
+    while( p )
+    {
+      for( int i = 1 ; i < argc ; ++i )
+        if( strcmp( bSuite ? p->m_details.suiteName
+                           : p->m_details.testName, argv[ i ] ) == 0 )
+          selectedTests.Add( p );
+       UnitTest::Test* q = p;
+       p = p->next;
+       q->next = NULL;
+    }
+
+      //run selected test(s) only
+    UnitTest::TestReporterStdout reporter;
+    UnitTest::TestRunner runner( reporter );
+    return runner.RunTestsIf( selectedTests, 0, UnitTest::True(), 0 );
+
+  }
+  else
   {
     return UnitTest::RunAllTests();
   }
+}
