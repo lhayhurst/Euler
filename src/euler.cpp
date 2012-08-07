@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <functional>
 using namespace std;
 
 /* If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.
@@ -32,22 +33,32 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 find the sum of the even-valued terms.
 */
 
+void fibonacci( long int max, function<void(long int&)> action ) {
+    long int f1 = 1;
+    long int f2 = 2;
+    while ( f2 <= max ) {
+       action( f2 );
+       int tmp = f2;
+       f2 = f1 + tmp;
+       f1 = tmp;
+    }
+}
+
 TEST(ProblemTwo)
 {
-    int sum = 0;
-    int f1 = 1;
-    int f2 = 2;
-    while ( f2 <= 4000000 ) {
-        if ( f2 % 2 == 0 ) {
-            sum += f2;
+    long int sum = 0;
+
+    auto accumulator = [&sum](long int elem) {
+        if ( elem % 2 == 0) {
+            sum += elem;
         }
-        int tmp = f2;
-        f2 = f1 + tmp;
-        f1 = tmp;
-    }
+    };
+    fibonacci( 4000000, accumulator );
     CHECK_EQUAL( 4613732, sum );
     //std::cout << sum << std::endl;
 }
+
+
 
 vector<unsigned long> prime_factors( unsigned long N ) {
     unsigned long d = 2;
@@ -73,7 +84,7 @@ TEST(ProblemThree)
     unsigned long N = 600851475143;
     vector<unsigned long> factors = prime_factors( N );
     sort( factors.begin(), factors.end() );
-    cout << factors.back() << endl;
+    CHECK_EQUAL( 6857, factors.back() );
 }
 
 int main()

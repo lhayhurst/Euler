@@ -3,3 +3,9 @@ This file was created by IntelliJ IDEA 11.1.2 for binding GitHub repository
 c++11 pages of interest:
     - http://blog.smartbear.com/software-quality/bid/167271/The-Biggest-Changes-in-C-11-and-Why-You-Should-Care
     - http://gcc.gnu.org/gcc-4.7/cxx0x_status.html
+
+
+C++11 features to play with:
+
+- auto: problem 1
+- lamdas: problem 3
