@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <functional>
 #include <cstring>
+#include <map>
+#include <unordered_map>
 using namespace std;
 
 /* If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9.
@@ -134,26 +136,40 @@ unsigned int factoral( int factor ) {
     return product;
 }
 
-TEST(ProblemFiveBruteForce)
+TEST(ProblemFive)
 {
-    unsigned int start   = 20;
-    unsigned int ceiling = factoral( start );
-    unsigned int m  = ceiling - start;
-    unsigned int result = m;
-    while ( m > 1 ) {
-        unsigned int n = start;
-        bool isdiv = true;
-        while ( n-- > 1 && isdiv ) {
-            if ( m % n != 0 ) {
-                isdiv = false;
-            }
-        }
-        if ( isdiv ) {
-            result = m;
-        }
-        m -= start;
-    }
-    CHECK_EQUAL( 232792560, result );
+   /* this solution makes use of the fact that the smallest evenly divisible dumber is the
+      product of the greatest power of each prime factor in the range */
+   //map<unsigned long> powers;
+   unordered_map<unsigned long, unsigned long> factors;
+   for( unsigned long i = 2; i <= 20; i++ ) {
+       vector<unsigned long> fas = prime_factors( i );
+       unordered_map<unsigned long, unsigned long> factors_of_i;
+       for( auto it = fas.begin(); it != fas.end(); it++ ) {
+           factors_of_i[ *it ]++;
+       }
+       /* the below code pretty prints the factors
+       cout << i << ": ";
+       for( auto kv: factors_of_i ) {
+           cout << kv.first << "^" << kv.second << "\t";
+       }
+       cout << endl;
+       */
+       for( auto lkv: factors_of_i ) {
+           auto gkv = factors[lkv.first];
+           if ( lkv.second > gkv ) {
+               factors[lkv.first] = lkv.second;
+           }
+       }
+   }
+
+   //and finally calculate the product
+   unsigned long result = 1;
+   for( auto kv: factors) {
+       unsigned long product = pow( kv.first, kv.second );
+       result *= product;
+   }
+   CHECK_EQUAL( 232792560, result );
 
 }
 
